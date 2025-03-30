@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { auth } from "@/lib/firebaseConfig";
+import Cookies from "js-cookie";
+
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -36,6 +38,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
+
     });
     return () => unsubscribe();
   }, []);
@@ -54,7 +57,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const googleProvider = new GoogleAuthProvider();
   const signInWithGoogle = async (): Promise<void> => {
-    await signInWithPopup(auth, googleProvider);
+    try{
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+
+      if(user && user.uid){
+        const userId = user.uid;
+
+        // store userId in cookies
+        Cookies.set("userId", userId, {expires: 7})
+        console.log("sign in with google userId successful", userId)
+      }
+    } catch(error){
+      console.error("sign in with google failed", error)
+      alert("sign in with google failed")
+    } finally{
+      setLoading(false)
+    }
+
   };
 
   const value: AuthContextType = { user, login, signup, logout, signInWithGoogle };
