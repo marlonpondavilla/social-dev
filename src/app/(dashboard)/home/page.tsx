@@ -13,7 +13,6 @@ const HomePageClient = () => {
       <h2>Welcome, {userData?.displayName}</h2>
       <h3>Email: {userData?.email}</h3>
       <h4>UID: {userData?.uid}</h4>
-      <LogoutButton/>
     </div>
   )
 }
