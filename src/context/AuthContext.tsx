@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { auth } from "@/lib/firebaseConfig";
 import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 import {
   onAuthStateChanged,
@@ -33,13 +34,22 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setLoading(false);
-
+      
+      if(firebaseUser){
+        setUser(user);
+        Cookies.set("userId", firebaseUser.uid, {expires: 7})
+      } else{
+        setUser(null);
+        Cookies.remove("userId")
+      }
+      setLoading(false);
     });
+
     return () => unsubscribe();
   }, []);
 
@@ -53,20 +63,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = async (): Promise<void> => {
     await signOut(auth);
+    Cookies.remove("userId")
+    setUser(null);
   };
 
   const googleProvider = new GoogleAuthProvider();
   const signInWithGoogle = async (): Promise<void> => {
+    
+
     try{
       const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+      const firebaseUser = result.user;
 
-      if(user && user.uid){
-        const userId = user.uid;
-
-        // store userId in cookies
-        Cookies.set("userId", userId, {expires: 7})
-        console.log("sign in with google userId successful", userId)
+      if(firebaseUser && firebaseUser.uid){
+        Cookies.set("userId", firebaseUser.uid, {expires: 7})
+        setUser(firebaseUser);
+        router.push("/home")
+      } else{
+        router.push("/login")
       }
     } catch(error){
       console.error("sign in with google failed", error)
