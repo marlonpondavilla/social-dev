@@ -1,10 +1,11 @@
+
+import LogoutButton from '@/components/logoutButton'
 import React from 'react'
+import HomePageClient from './home-page'
 
 const HomePage = () => {
   return (
-    <div className='bg-purple-400'> 
-      <h1 className='text-center text-4xl'>Homepage</h1>
-    </div>
+    <HomePageClient/>
   )
 }
 

@@ -65,6 +65,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     await signOut(auth);
     Cookies.remove("userId")
     setUser(null);
+    router.push("/login")
   };
 
   const googleProvider = new GoogleAuthProvider();
