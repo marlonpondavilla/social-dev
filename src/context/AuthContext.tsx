@@ -1,51 +1,53 @@
-"use client"; 
-
+"use client"
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebaseConfig";
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
+import { onAuthStateChanged, GoogleAuthProvider, signInWithPopup, User as FirebaseUser } from "firebase/auth";
 
-import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signOut,
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  User as FirebaseUser,
-} from "firebase/auth";
+// Define the shape of user data
+interface UserData {
+  displayName: string | null;
+  email: string | null;
+  photoURL: string | null;
+  uid: string;
+}
 
-// Define the shape of your context
 interface AuthContextType {
   user: FirebaseUser | null;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
+  userData: UserData | null; 
   signInWithGoogle: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
-// Create context with a default value of null
 const AuthContext = createContext<AuthContextType | null>(null);
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null); 
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setLoading(false);
-      
-      if(firebaseUser){
-        setUser(user);
-        Cookies.set("userId", firebaseUser.uid, {expires: 7})
-      } else{
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const token = await firebaseUser.getIdToken();
+        Cookies.set("token", token, { expires: 7 });
+
+        setUser(firebaseUser);
+
+        const userObj: UserData = {
+          displayName: firebaseUser.displayName,
+          email: firebaseUser.email,
+          photoURL: firebaseUser.photoURL,
+          uid: firebaseUser.uid,
+        };
+        
+        setUserData(userObj); 
+      } else {
         setUser(null);
-        Cookies.remove("userId")
+        setUserData(null);
+        Cookies.remove("token");
       }
       setLoading(false);
     });
@@ -53,48 +55,45 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string): Promise<void> => {
-    await signInWithEmailAndPassword(auth, email, password);
-  };
+  const signInWithGoogle = async () => {
+    const googleProvider = new GoogleAuthProvider();
+    googleProvider.setCustomParameters({
+      prompt: "select_account"
+    })
+    const result = await signInWithPopup(auth, googleProvider);
+    const firebaseUser = result.user;
 
-  const signup = async (email: string, password: string): Promise<void> => {
-    await createUserWithEmailAndPassword(auth, email, password);
-  };
+    if (firebaseUser && firebaseUser.uid) {
+      const token = await firebaseUser.getIdToken(true);
+      Cookies.set("token", token, { expires: 7 });
 
-  const logout = async (): Promise<void> => {
-    await signOut(auth);
-    Cookies.remove("userId")
-    setUser(null);
-    router.push("/login")
-  };
+      setUser(firebaseUser);
 
-  const googleProvider = new GoogleAuthProvider();
-  const signInWithGoogle = async (): Promise<void> => {
-    
+      const userObj: UserData = {
+        displayName: firebaseUser.displayName,
+        email: firebaseUser.email,
+        photoURL: firebaseUser.photoURL,
+        uid: firebaseUser.uid,
+      };
 
-    try{
-      const result = await signInWithPopup(auth, googleProvider);
-      const firebaseUser = result.user;
-
-      if(firebaseUser && firebaseUser.uid){
-        Cookies.set("userId", firebaseUser.uid, {expires: 7})
-        setUser(firebaseUser);
-        router.push("/home")
-      } else{
-        router.push("/login")
-      }
-    } catch(error){
-      console.error("sign in with google failed", error)
-      alert("sign in with google failed")
-    } finally{
-      setLoading(false)
+      setUserData(userObj); 
+      router.push("/home");
     }
-
   };
 
-  const value: AuthContextType = { user, login, signup, logout, signInWithGoogle };
+  const logout = async () => {
+    await auth.signOut();
+    Cookies.remove("token");
+    setUser(null);
+    setUserData(null);
+    router.push("/login");
+  };
 
-  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, userData, signInWithGoogle, logout }}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => useContext(AuthContext) as AuthContextType;
