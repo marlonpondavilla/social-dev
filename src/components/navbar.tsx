@@ -6,8 +6,8 @@ import LogoutButton from "./logoutButton";
 
 const navbarItems = [
   { name: "Home", href: "/home" },
+  { name: "Friends", href: "/friends" },
   { name: "Profile", href: "/profile" },
-  { name: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
