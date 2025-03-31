@@ -6,21 +6,22 @@ import Image from "next/image";
 const ProfilePage = () => {
   const {userData} = useAuth();
   return (
-    <div className="flex flex-col items-center justify-center h-screen gap-4">
-      <section className="flex flex-col items-center justify-center gap-2">
-        
+    <div className="relative flex flex-col items-center justify-center h-screen gap-2">
+      <div className="relative">
         <Image 
-          src={userData?.photoURL || "No image found"}
-          width={100}
-          height={100}
-          alt="Profile Image"
-          className="rounded-full border-2 border-gray-300"
+          src={userData?.photoURL || "No profile"} 
+          width={50}
+          height={50}
+          className="rounded-full" 
+          alt=""
         />
-        <h2 className="text-center text-2xl">{userData?.displayName}</h2>
-        <p className="text-center text-base">{userData?.email}</p>
-      </section>
-      
+        <span className="bottom-0 left-9 absolute w-3 h-3 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
+      </div>
+      <span className="text-sm">
+        {userData?.displayName || "No name"}
+      </span>
     </div>
+
   )
 }
 
