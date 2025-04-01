@@ -1,11 +1,13 @@
 
+import PostCard from '@/components/postCard';
 import HomePageClient from './home-page'
 
 const HomePage = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate a delay
+  await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate a delay
   return (
-    <HomePageClient />
-  )
+    <HomePageClient>
+      <PostCard />
+    </HomePageClient>  )
 }
 
 export default HomePage
