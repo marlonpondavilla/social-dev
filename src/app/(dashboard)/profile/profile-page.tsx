@@ -30,11 +30,12 @@ const ProfilePageClient = () => {
       <div className="profile-container flex flex-col items-center justify-center h-screen gap-2 mt-[6rem]">
         <div className="relative">
           <Image 
-            src={userData?.photoURL || ""} 
+            src={userData?.photoURL || "/images/defaultProfile.png"} 
             width={100}
             height={100}
             className="rounded-full border-2 border-gray-300 dark:border-gray-700" 
-            alt=""
+            alt="User profile image"
+            priority
           />
           <span className="bottom-1 right-3 absolute w-4 h-4 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full" title="Active now"></span>
         </div>  
