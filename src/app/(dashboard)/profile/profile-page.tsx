@@ -3,15 +3,34 @@
 import PostCard from "@/components/postCard";
 import { useAuth } from "@/context/AuthContext"
 import Image from "next/image";
+import { useState } from "react";
+import { createUserPost } from "@/actions/userPostActions";
+import type { UserPost } from "@/actions/userPostActions";
 
 const ProfilePageClient = () => {
   const {userData} = useAuth();
+  const [userPost, setUserPost] = useState("");
+ 
+  const handlePostSubmit = () => {
+    const postData: UserPost = {
+      userId: userData?.uid || "",
+      userImg: userData?.photoURL || "",
+      postUserRole: "FullStack",
+      postContent: userPost,
+      postImageUrl: "",
+      postCodeSnippet: "",
+      postFeelings: ""
+    }
+    
+    return createUserPost(postData);
+  }
+
   return (
     <>
       <div className="profile-container flex flex-col items-center justify-center h-screen gap-2 mt-[6rem]">
         <div className="relative">
           <Image 
-            src={userData?.photoURL || "No profile"} 
+            src={userData?.photoURL || ""} 
             width={100}
             height={100}
             className="rounded-full border-2 border-gray-300 dark:border-gray-700" 
@@ -20,7 +39,7 @@ const ProfilePageClient = () => {
           <span className="bottom-1 right-3 absolute w-4 h-4 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full" title="Active now"></span>
         </div>  
         <div className="flex flex-col items-center justify-center text-base font-semibold text-white dark:text-white space-y-2">
-          <p>{userData?.displayName || "No name"}</p>
+          <p>{userData?.displayName}</p>
           <p className="bg-purple-100 text-purple-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-purple-900 dark:text-purple-300 text-center">FullStack</p>
         </div>
         <div className="create-post-container flex-col items-center justify-center gap-2 border-2 text-md p-4 font-light mt-4 w-[38rem] rounded-b-md">
@@ -28,9 +47,15 @@ const ProfilePageClient = () => {
             <input
               type="text"
               placeholder="Write or upload dev related stuff to create a post."
+              onChange={(e) => setUserPost(e.target.value)}
               className="border-2 border-gray-300 rounded-full p-3 w-[26rem] font-light text-md bg-gray-9 text-gray-200"  
             />
-            <button className="bg-blue-500 py-3 w-[6rem] rounded-full hover:bg-blue-400 cursor-pointer font-semibold text-gray-800">Post</button>
+            <button
+            onClick={handlePostSubmit} 
+            className="bg-blue-500 py-3 w-[6rem] rounded-full hover:bg-blue-400 cursor-pointer font-semibold text-gray-800"
+            >
+              Post
+            </button>
           </div>
           <div className="post-options flex items-center justify-center space-x-8 mt-4">
             <span className="photo-upload border-2 p-2 cursor-pointer" title="Upload a photo">
