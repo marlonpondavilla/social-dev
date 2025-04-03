@@ -7,7 +7,7 @@ const HomePageClient = ({
 }) => {
 
   return (
-    <main className="flex flex-col items-center justify-center h-screen gap-4">
+    <main className="flex flex-col items-center justify-center h-screen gap-4 text-white">
       <h1 className="text-4xl">Today's posts from developers in your guild.</h1>
       {children}
     </main>
