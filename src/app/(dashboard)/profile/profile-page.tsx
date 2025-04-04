@@ -14,6 +14,7 @@ const ProfilePageClient = () => {
   const handlePostSubmit = () => {
     const postData: UserPost = {
       userId: userData?.uid || "",
+      userName: userData?.displayName || "",
       userImg: userData?.photoURL || "",
       postUserRole: "FullStack",
       postContent: userPost,

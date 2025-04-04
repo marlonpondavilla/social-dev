@@ -1,11 +1,10 @@
 
 import PostCard from '@/components/postCard';
 import HomePageClient from './home-page'
-import { userPosts } from '@/actions/userPostActions';
+import { fetchUserPosts } from '@/actions/userPostActions';
 
 const HomePage = async () => {
   await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate a delay
-  console.log(await userPosts())
   return (
     <HomePageClient>
       <PostCard />

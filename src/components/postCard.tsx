@@ -1,10 +1,14 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import Image from 'next/image'
+import type { UserPost } from '@/actions/userPostActions'
+import { fetchUserPosts } from '@/actions/userPostActions'
 
 export default function PostCard() {
   const {userData} = useAuth();
+  const [posts, setPosts] = useState<UserPost[]>([]);
+
   const [showDropDown, setShowDropdown] = useState(false);
   const [liked, setLiked] = useState(false);
   const [isFrontEnd, setIsFrontEnd] = useState(false);
@@ -18,11 +22,26 @@ export default function PostCard() {
     isBackEnd ? "bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-blue-900 dark:text-blue-300" :
     isFullStack ? "bg-purple-100 text-purple-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-purple-900 dark:text-purple-300" : "";
 
+  useEffect(() => {
+    const getPosts = async () => {
+      try{
+        const userPosts = await fetchUserPosts();
+        setPosts(userPosts);
+      } catch (e){
+        throw new Error("Error fetching user posts: " + e);
+      }
+    };
+
+    getPosts();
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-center gap-4 py-8">
-      <div className="relative flex items-start gap-4 bg-white p-6 shadow-lg rounded-xl w-full max-w-[600px] dark:bg-gray-800">
+      {
+        posts.map((post, index) => (
+          <div key={index} className="relative flex items-start gap-4 bg-white p-6 shadow-lg rounded-xl w-full max-w-[600px] dark:bg-gray-800">
         <Image
-          src={userData?.photoURL || "/default-profile.png"}
+          src={post.userImg || "/default-profile.png"}
           className="w-12 h-12 rounded-full border-2 border-gray-300 dark:border-gray-700"
           alt="User profile image"
           width={48}
@@ -32,9 +51,9 @@ export default function PostCard() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2 mb-1">
                 <span className="text-base font-semibold text-gray-900 dark:text-white">
-                  {userData?.displayName}
+                  {post.userName}
                 </span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">11:46</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">{post.postDate}</span>
               </div>
               <button
                 onClick={() => setShowDropdown(!showDropDown)}
@@ -46,7 +65,7 @@ export default function PostCard() {
           
             <p className="text-base text-gray-900 dark:text-white mt-4 border-2 p-2 rounded-b-md bg-gray-100">
               {
-                
+                post.postContent || ""
               }
             </p>
           
@@ -118,6 +137,8 @@ export default function PostCard() {
           )}
         </div>
       </div>
+        ))
+      }
     </div> 
   )
 }

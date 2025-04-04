@@ -7,20 +7,11 @@ export const createData = async (path: string, data: any) => {
   return newDataRef.key;
 }
 
-export const readData = async () => {
-  const dbRef = ref(database, "UserPosts");
-  const snapshot = await get(dbRef);
-
-  if(snapshot.exists()){
-    const data = snapshot.val();
-
-    const userPosts = [];
-
-    for(const userId in data){
-      if(data.hasOwnProperty(userId)){
-
-      }
-    }
-
+export const readData = async (path: string) => {
+  const snapshot = await get(ref(database, path));
+  if (snapshot.exists()) {
+    return snapshot.val();
+  } else {
+    throw new Error("No data available");
   }
 }
