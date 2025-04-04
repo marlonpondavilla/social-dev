@@ -45,7 +45,9 @@ export default function PostCard() {
             </div>
           
             <p className="text-base text-gray-900 dark:text-white mt-4 border-2 p-2 rounded-b-md bg-gray-100">
-              What's the difference between Next.js and React? 🤔 Let's find out!
+              {
+                
+              }
             </p>
           
             <div className="group relative my-2">

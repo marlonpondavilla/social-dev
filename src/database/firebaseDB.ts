@@ -6,3 +6,21 @@ export const createData = async (path: string, data: any) => {
   await set(newDataRef, data);
   return newDataRef.key;
 }
+
+export const readData = async () => {
+  const dbRef = ref(database, "UserPosts");
+  const snapshot = await get(dbRef);
+
+  if(snapshot.exists()){
+    const data = snapshot.val();
+
+    const userPosts = [];
+
+    for(const userId in data){
+      if(data.hasOwnProperty(userId)){
+
+      }
+    }
+
+  }
+}
