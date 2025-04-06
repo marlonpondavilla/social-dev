@@ -28,7 +28,7 @@ const ProfilePageClient = () => {
 
   return (
     <>
-      <div className="profile-container flex flex-col items-center justify-center h-screen gap-2 mt-[6rem]">
+      <div className="profile-container flex flex-col items-center justify-center gap-2">
         <div className="relative">
           <Image 
             src={userData?.photoURL || "/images/defaultProfile.png"} 
@@ -42,7 +42,7 @@ const ProfilePageClient = () => {
         </div>  
         <div className="flex flex-col items-center justify-center text-base font-semibold text-white dark:text-white space-y-2">
           <p>{userData?.displayName}</p>
-          <p className="bg-purple-100 text-purple-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-purple-900 dark:text-purple-300 text-center">FullStack</p>
+          <p className="bg-purple-100 text-purple-800 text-sm font-medium me-2 px-2.5 py-0.5 my-2 rounded-sm dark:bg-purple-900 dark:text-purple-300 text-center">FullStack</p>
         </div>
         <div className="create-post-container flex-col items-center justify-center gap-2 border-2 text-md p-4 font-light mt-4 w-[38rem] rounded-b-md">
           <div className="post-input flex justify-center space-x-2">
@@ -82,7 +82,7 @@ const ProfilePageClient = () => {
         </div>
 
         <div className="post-container">
-          <PostCard />
+          {/* <PostCard /> */}
         </div>
       </div>
     </>

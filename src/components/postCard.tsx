@@ -36,7 +36,7 @@ export default function PostCard() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 py-8">
+    <div className="flex flex-col items-center justify-center gap-4 py-8 ">
       {
         posts.map((post, index) => (
           <div key={index} className="relative flex items-start gap-4 bg-white p-6 shadow-lg rounded-xl w-full max-w-[600px] dark:bg-gray-800">

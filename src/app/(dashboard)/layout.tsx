@@ -6,9 +6,11 @@ export default function HomeLayout({
   children: React.ReactNode
 }){
   return(
-    <div className="bg-gray-800">
+    <div className="text-white">
       <Navbar/>
-      {children}
+      <div className="pt-[10rem]">
+        {children}
+      </div>
     </div>
   )
 }
