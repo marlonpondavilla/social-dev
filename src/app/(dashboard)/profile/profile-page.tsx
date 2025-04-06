@@ -1,6 +1,5 @@
 "use client"
 
-import PostCard from "@/components/postCard";
 import { useAuth } from "@/context/AuthContext"
 import Image from "next/image";
 import { useState } from "react";
@@ -10,6 +9,7 @@ import type { UserPost } from "@/actions/userPostActions";
 const ProfilePageClient = () => {
   const {userData} = useAuth();
   const [userPost, setUserPost] = useState("");
+  const [isDisabled, setIsDisabled] = useState(true);
  
   const handlePostSubmit = () => {
     const postData: UserPost = {
@@ -44,17 +44,21 @@ const ProfilePageClient = () => {
           <p>{userData?.displayName}</p>
           <p className="bg-purple-100 text-purple-800 text-sm font-medium me-2 px-2.5 py-0.5 my-2 rounded-sm dark:bg-purple-900 dark:text-purple-300 text-center">FullStack</p>
         </div>
-        <div className="create-post-container flex-col items-center justify-center gap-2 border-2 text-md p-4 font-light mt-4 w-[38rem] rounded-b-md">
+        <div className="create-post-container flex-col items-center justify-center gap-2 border-2 text-md p-8 font-light mt-4 w-[38rem] rounded-b-md">
           <div className="post-input flex justify-center space-x-2">
             <input
               type="text"
               placeholder="Write or upload dev related stuff to create a post."
-              onChange={(e) => setUserPost(e.target.value)}
+              onChange={(e) => {
+                setUserPost(e.target.value);
+                setIsDisabled(e.target.value.trim() === "");
+              }}
               className="border-2 border-gray-300 rounded-full p-3 w-[26rem] font-light text-md bg-gray-9 text-gray-200"  
             />
             <button
-            onClick={handlePostSubmit} 
-            className="bg-blue-500 py-3 w-[6rem] rounded-full hover:bg-blue-400 cursor-pointer font-semibold text-gray-800"
+              disabled={isDisabled}
+              onClick={handlePostSubmit} 
+              className="bg-blue-700 py-3 w-[6rem] rounded-full hover:bg-blue-600 cursor-pointer font-semibold disabled:cursor-not-allowed"
             >
               Post
             </button>
